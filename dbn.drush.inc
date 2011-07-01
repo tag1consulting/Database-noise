@@ -14,7 +14,7 @@
  *   'TABLE_NAME' => array(
  *     'FIELD_NAME' => array(
  *       'callback' => 'FUNCTION',
- *       'options' => array('ARG1', 'ARG2', '...', 'ARGN'),
+ *       'arguments' => array('ARG1', 'ARG2', '...', 'ARGN'),
  *       'type' => 'text',
  *     ),
  *     'FIELD2_NAME' => array(
@@ -36,7 +36,7 @@ function dbn_drush_command() {
     'callback' => 'drush_dbn_write',
     'description' => 'Write to database.',
     'aliases' => array('dbnw'),
-    'options' => array('--limit' => dt('Write LIMIT rows into all defined database tables (per thread)'), '--time' => dt('Write to database for TIME seconds'), '--child' => dt('Fork CHILD children processes.')),
+    'arguments' => array('--limit' => dt('Write LIMIT rows into all defined database tables (per thread)'), '--time' => dt('Write to database for TIME seconds'), '--child' => dt('Fork CHILD children processes.')),
     'examples' => array(
       'drush dbnw --limit=10' => 'Write 10 rows to the defined tables.',
       'drush dbnw --time=60 --child=5' => 'Write to the defined tables for 60 seconds.',
@@ -99,8 +99,8 @@ function drush_dbn_write_sql() {
           $value = $details['value'];
         }
         else if (isset($details['callback']) && function_exists($details['callback'])) {
-          if (isset($details['options'])) {
-            $value = call_user_func_array($details['callback'], $details['options']);
+          if (isset($details['arguments'])) {
+            $value = call_user_func_array($details['callback'], $details['arguments']);
           }
           else {
             $value = call_user_func($details['callback']);

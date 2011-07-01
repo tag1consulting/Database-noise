@@ -12,17 +12,17 @@ $conf['dbn_write_tables'] = array(
     ),
     'subject' => array(
       'callback' => 'dbn_random_name',
-      'options' => array(64),
+      'arguments' => array(64),
       'type' => 'string',
     ),
     'comment' => array(
       'callback' => 'dbn_random_paragraphs',
-      'options' => array(50),
+      'arguments' => array(50),
       'type' => 'string',
     ),
     'hostname' => array(
       'callback' => 'dbn_random_name',
-      'options' => array(128),
+      'arguments' => array(128),
       'type' => 'string',
     ),
     'timestamp' => array(
@@ -31,7 +31,7 @@ $conf['dbn_write_tables'] = array(
     ),
     'status' => array(
       'callback' => 'rand',
-      'options' => array(0, 1),
+      'arguments' => array(0, 1),
       'type' => 'int',
     ),
   ),
