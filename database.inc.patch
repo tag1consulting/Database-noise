@@ -1,0 +1,29 @@
+ 1 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/includes/database.inc b/includes/database.inc
+index 683ae69..76a7502 100644
+--- a/includes/database.inc
++++ b/includes/database.inc
+@@ -117,10 +117,12 @@ function db_prefix_tables($sql) {
+  * @param $name
+  *   The name assigned to the newly active database connection. If omitted, the
+  *   default connection will be made active.
++ * @param $reconnect
++ *   A boolean flagging whether the connection should be re-established.
+  *
+  * @return the name of the previously active database or FALSE if non was found.
+  */
+-function db_set_active($name = 'default') {
++function db_set_active($name = 'default', $reconnect = FALSE) {
+   global $db_url, $db_type, $active_db;
+   static $db_conns, $active_name = FALSE;
+ 
+@@ -129,7 +131,7 @@ function db_set_active($name = 'default') {
+     install_goto('install.php');
+   }
+ 
+-  if (!isset($db_conns[$name])) {
++  if (!isset($db_conns[$name]) || $reconnect) {
+     // Initiate a new connection, using the named DB URL specified.
+     if (is_array($db_url)) {
+       $connect_url = array_key_exists($name, $db_url) ? $db_url[$name] : $db_url['default'];
