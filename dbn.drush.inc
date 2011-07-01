@@ -3,11 +3,12 @@
 /**
  * DataBase Noise.
  *
- * Drush script for generating database noise.
+ * Drush script for generating database noise.  See settings.php.sample for
+ * an example configuration that can be added to settings.php.
  */
 
 /**
- * Configured in settings.php, as follows:
+ * Tables to be written to should be configured in settings.php as follows:
  *
  * $config['dbn_write_tables'] = array(
  *   'TABLE_NAME' => array(
@@ -21,9 +22,11 @@
  *       'type' => 'int',
  *     ),
  *   ),
+ *   'TABLE2_NAME' => ...
  * );
  *
  * Supported types:  int, float, text
+ * Scroll down for a number of callback helpers.
  */
 
 function dbn_drush_command() {
@@ -33,11 +36,19 @@ function dbn_drush_command() {
     'callback' => 'drush_dbn_write',
     'description' => 'Write to database.',
     'aliases' => array('dbnw'),
+    'options' => array('--limit' => dt('Write LIMIT rows into all defined database tables (per thread)'), '--time' => dt('Write to database for TIME seconds'), '--child' => dt('Fork CHILD children processes.')),
+    'examples' => array(
+      'drush dbnw --limit=10' => 'Write 10 rows to the defined tables.',
+      'drush dbnw --time=60 --child=5' => 'Write to the defined tables for 60 seconds.',
+    ),
   );
 
   return $items;
 }
 
+/**
+ * Writes to tables, forking children as necessary.
+ */
 function drush_dbn_write() {
   $verbose = drush_get_context('DRUSH_VERBOSE');
   $child = (int)drush_get_option('child');
@@ -45,7 +56,7 @@ function drush_dbn_write() {
     for ($children = 0; $children < $child; $children++) {
       $pid = pcntl_fork();
       if ($pid == -1) {
-        die('could not fork');
+        die('Failed to fork.');
       }
       else if ($pid) {
         // we are the parent
@@ -53,13 +64,11 @@ function drush_dbn_write() {
           pcntl_wait($status); // Protect against Zombie children
         }
         db_set_active('default', TRUE);
-        echo "Parent ($child) ($children) ($pid) done.\n";
       }
       else {
         db_set_active('default', TRUE);
         drush_dbn_write_sql();
         db_set_active('default', TRUE);
-        echo "Child ($children) ($pid) done.\n";
         return;
       }
     }
@@ -70,32 +79,6 @@ function drush_dbn_write() {
 }
 
 function drush_dbn_write_sql() {
-$config['dbn_write_tables'] = array(
-  'queue' => array(
-    'name' => array(
-      'callback' => 'dbn_random_sentence',
-      'options' => array(5),
-      'type' => 'string',
-    ),
-    'data' => array(
-      'callback' => 'dbn_random_paragraphs',
-      'options' => array(50),
-      'callback' => 'dbn_random_sentence',
-      'options' => array(1),
-      'type' => 'string',
-    ),
-    'expire' => array(
-      'callback' => 'rand',
-      'options' => array(10000000000, 99999999999),
-      'type' => 'int',
-    ),
-    'created' => array(
-      'callback' => 'rand',
-      'options' => array(10000000000, 99999999999),
-      'type' => 'int',
-    ),
-  ),
-);
   $verbose = drush_get_context('DRUSH_VERBOSE');
   if ($time = (int)drush_get_option('time')) {
     timer_start('dbn_write');
@@ -103,7 +86,6 @@ $config['dbn_write_tables'] = array(
   $limit = (int)drush_get_option('limit');
 
   $writes = variable_get('dbn_write_tables', array());
-  $writes = $config['dbn_write_tables'];
 
   $counter = 0;
   $loop = TRUE;
@@ -240,3 +222,18 @@ function dbn_random_paragraphs($paragraphs = 10) {
   }
   return $str;
 }
+
+/**
+ * Returns a valid, active nid.
+ */
+function dbn_random_nid() {
+  return db_result(db_query_range('SELECT nid FROM {node} WHERE status = 1 ORDER BY RAND()', 0, 1));
+}
+
+/**
+ * Returns a valid, active uid.
+ */
+function dbn_random_uid() {
+  return db_result(db_query_range('SELECT uid FROM {users} WHERE status = 1 ORDER BY RAND()', 0, 1));
+}
+

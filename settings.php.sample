@@ -1,0 +1,38 @@
+<?php
+
+$conf['dbn_write_tables'] = array(
+  'comments' => array(
+    'nid' => array(
+      'callback' => 'dbn_random_nid',
+      'type' => 'int',
+    ),
+    'uid' => array(
+      'callback' => 'dbn_random_uid',
+      'type' => 'int',
+    ),
+    'subject' => array(
+      'callback' => 'dbn_random_name',
+      'options' => array(64),
+      'type' => 'string',
+    ),
+    'comment' => array(
+      'callback' => 'dbn_random_paragraphs',
+      'options' => array(50),
+      'type' => 'string',
+    ),
+    'hostname' => array(
+      'callback' => 'dbn_random_name',
+      'options' => array(128),
+      'type' => 'string',
+    ),
+    'timestamp' => array(
+      'callback' => 'time',
+      'type' => 'int',
+    ),
+    'status' => array(
+      'callback' => 'rand',
+      'options' => array(0, 1),
+      'type' => 'int',
+    ),
+  ),
+);
