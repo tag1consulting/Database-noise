@@ -1,0 +1,3 @@
+name = Database Noise
+description = Generate database noise.
+core = 6.x
