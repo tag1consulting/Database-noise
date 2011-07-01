@@ -36,13 +36,13 @@ Details:
  o 'value' will be used if 'callback' is not defined.
 
 Included callbacks:
- o dbn_random_string($length)         # (includes funky characters)
- o dbn_random_name($length)           # (includes friendly characters)
- o dbn_random_sentence($words)        # ($words space-seperated random_names)
- o dbn_random_paragraph($sentences)   # (A paragraph of N sentences)
- o dbn_random_paragraphs($paragraphs) # (N paragraphs)
- o dbn_random_nid()                   # A valid, active nid
- o dbn_random_uid()                   # A valid, active uid
+ o dbn_random_string($length)         # includes funky characters
+ o dbn_random_name($length)           # includes friendly characters
+ o dbn_random_sentence($words)        # $words space-seperated random_names
+ o dbn_random_paragraph($sentences)   # a paragraph of n sentences
+ o dbn_random_paragraphs($paragraphs) # n paragraphs
+ o dbn_random_nid()                   # a valid, active nid
+ o dbn_random_uid()                   # a valid, active uid
 
 EXAMPLES:
 ---------
